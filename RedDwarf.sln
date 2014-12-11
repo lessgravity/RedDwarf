@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedDwarf.Server", "RedDwarf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedDwarf.Client", "RedDwarf.Client\RedDwarf.Client.csproj", "{30756048-40AE-4E4C-A185-5862ABD9C406}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RedDwarf.Network", "RedDwarf.Network\RedDwarf.Network.csproj", "{CB6DCB2A-13A3-4A92-855E-785F200D1CA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{30756048-40AE-4E4C-A185-5862ABD9C406}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30756048-40AE-4E4C-A185-5862ABD9C406}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30756048-40AE-4E4C-A185-5862ABD9C406}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB6DCB2A-13A3-4A92-855E-785F200D1CA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB6DCB2A-13A3-4A92-855E-785F200D1CA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB6DCB2A-13A3-4A92-855E-785F200D1CA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB6DCB2A-13A3-4A92-855E-785F200D1CA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
