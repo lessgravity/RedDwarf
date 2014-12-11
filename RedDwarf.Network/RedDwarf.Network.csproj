@@ -39,12 +39,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BufferedStream.cs" />
     <Compile Include="Interfaces\IPacket.cs" />
+    <Compile Include="NetworkManager.cs" />
     <Compile Include="NetworkMode.cs" />
     <Compile Include="PacketDirection.cs" />
     <Compile Include="Packets\KeepAlivePacket.cs" />
     <Compile Include="Packets\UnknownDataPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LessGravity.Common\LessGravity.Common.csproj">
+      <Project>{48df960b-85ab-4eb7-8be3-d5a31cdc016b}</Project>
+      <Name>LessGravity.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

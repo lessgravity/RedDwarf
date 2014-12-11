@@ -1,10 +1,11 @@
 ﻿using System.IO;
+using LessGravity.Common;
 
 namespace RedDwarf.Network.Interfaces
 {
     public interface IPacket
     {
-        NetworkMode ReadPacket(BinaryReader reader, NetworkMode networkMode, PacketDirection direction);
-        NetworkMode WritePacket(BinaryWriter writer, NetworkMode networkMode, PacketDirection direction);
+        NetworkMode ReadPacket(DataStream stream, NetworkMode networkMode, PacketDirection direction);
+        NetworkMode WritePacket(DataStream stream, NetworkMode networkMode, PacketDirection direction);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using LessGravity.Common;
 using RedDwarf.Network.Interfaces;
 
 namespace RedDwarf.Network.Packets
@@ -7,15 +7,15 @@ namespace RedDwarf.Network.Packets
     {
         public int KeepAlive { get; set; }
 
-        public NetworkMode ReadPacket(BinaryReader reader, NetworkMode networkMode, PacketDirection direction)
+        public NetworkMode ReadPacket(DataStream stream, NetworkMode networkMode, PacketDirection direction)
         {
-            KeepAlive = reader.ReadInt32();
+            KeepAlive = stream.ReadInt32();
             return networkMode;
         }
 
-        public NetworkMode WritePacket(BinaryWriter writer, NetworkMode networkMode, PacketDirection direction)
+        public NetworkMode WritePacket(DataStream stream, NetworkMode networkMode, PacketDirection direction)
         {
-            writer.Write(KeepAlive);
+            stream.WriteInt32(KeepAlive);
             return networkMode;
         }
     }
