@@ -1,21 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using LessGravity.Common;
 using RedDwarf.Network;
 using RedDwarf.Network.Interfaces;
+using RedDwarf.Network.Packets;
+using RedDwarf.Server.Events;
 
 namespace RedDwarf.Server
 {
     class RedDwarfServer : IDisposable
     {
         private readonly ServerSettings _serverSettings;
-        protected internal object _networkLock = new object();
+
+        private readonly object _networkLock = new object();
+
+        public event EventHandler<ChatMessageEventArgs> ChatMessage;
+        protected internal virtual void OnChatMessage(ChatMessageEventArgs e)
+        {
+            if (ChatMessage != null) ChatMessage(this, e);
+        }
+
+        public event EventHandler<ConnectionEstablishedEventArgs> ConnectionEstablished;
+        protected internal virtual void OnConnectionEstablished(ConnectionEstablishedEventArgs e)
+        {
+            if (ConnectionEstablished != null) ConnectionEstablished(this, e);
+        }
+
+        public event EventHandler<PlayerLogInEventArgs> PlayerLoggedIn;
+        protected internal virtual void OnPlayerLoggedIn(PlayerLogInEventArgs e)
+        {
+            if (PlayerLoggedIn != null) PlayerLoggedIn(this, e);
+        }
+
+        public event EventHandler<PlayerLogInEventArgs> PlayerLoggedOut;
+        protected internal virtual void OnPlayerLoggedOut(PlayerLogInEventArgs e)
+        {
+            if (PlayerLoggedOut != null) PlayerLoggedOut(this, e);
+        }
+
 
         protected internal RSACryptoServiceProvider CryptoServiceProvider { get; set; }
         protected internal RSAParameters ServerKey { get; set; }
@@ -69,6 +95,20 @@ namespace RedDwarf.Server
         public void Dispose()
         {
 
+        }
+
+        private void DoClientUpdates(RemoteClient client)
+        {
+            if (client.LastKeepAliveSent.AddSeconds(20) < DateTime.Now)
+            {
+                client.SendPacket(new KeepAlivePacket(Helpers.Random.Next()));
+                client.LastKeepAliveSent = DateTime.Now;
+            }
+
+            if (NextChunkUpdate < DateTime.Now)
+            {
+                
+            }
         }
 
         private void HandlePacket(RemoteClient remoteClient, IPacket packet)
@@ -127,6 +167,15 @@ namespace RedDwarf.Server
                     EntityThread.Abort();
                     EntityThread = null;
                 }
+            }
+        }
+
+        private void UpdateScheduledEvents()
+        {
+            if (DateTime.Now > NextPlayerUpdate)
+            {
+                Console.WriteLine("Updating Players");
+                NextPlayerUpdate = DateTime.Now.AddMinutes(1);
             }
         }
     }

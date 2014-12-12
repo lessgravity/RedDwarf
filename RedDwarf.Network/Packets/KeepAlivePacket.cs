@@ -5,7 +5,12 @@ namespace RedDwarf.Network.Packets
 {
     public class KeepAlivePacket : IPacket
     {
-        public int KeepAlive { get; set; }
+        public int KeepAlive { get; private set; }
+
+        public KeepAlivePacket(int keepAlive)
+        {
+            KeepAlive = keepAlive;
+        }
 
         public NetworkMode ReadPacket(DataStream stream, NetworkMode networkMode, PacketDirection direction)
         {

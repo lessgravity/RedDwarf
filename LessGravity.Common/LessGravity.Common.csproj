@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="DataStream.cs" />
     <Compile Include="DataStream.Stream.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
