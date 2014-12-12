@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace LessGravity.Common
@@ -36,6 +37,26 @@ namespace LessGravity.Common
             return (long)ReadUInt64();
         }
 
+        public byte[] ReadUInt8Array(int length)
+        {
+            if (length <= 0)
+            {
+                throw new ArgumentException("Length must be bigger than 0.", "length");
+            }
+            var result = new byte[length];
+            var bytesRead = length;
+            while (true)
+            {
+                bytesRead -= Read(result, length - bytesRead, bytesRead);
+                if (bytesRead == 0)
+                {
+                    break;
+                }
+                Thread.Sleep(1);
+            }
+            return result;
+        }
+
         public UInt32 ReadUInt32()
         {
             return (uint)(
@@ -55,7 +76,7 @@ namespace LessGravity.Common
                    ((UInt64)ReadUInt8() << 24) |
                    ((UInt64)ReadUInt8() << 16) |
                    ((UInt64)ReadUInt8() << 8) |
-                    (UInt64)ReadUInt8());
+                    ReadUInt8());
         }
 
         #endregion Read
