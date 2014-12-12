@@ -1,15 +1,14 @@
 ﻿using System;
-using System.IO;
 using LessGravity.Common;
 using RedDwarf.Network.Interfaces;
 
 namespace RedDwarf.Network.Packets
 {
-    public class UnknownDataPacket : IPacket
+    public struct UnknownDataPacket : IPacket
     {
-        public long Id { get; set; }
+        public long Id;
 
-        public byte[] Data { get; set; }
+        public byte[] Data;
 
         public NetworkMode ReadPacket(DataStream stream, NetworkMode networkMode, PacketDirection direction)
         {

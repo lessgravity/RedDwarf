@@ -3,9 +3,9 @@ using RedDwarf.Network.Interfaces;
 
 namespace RedDwarf.Network.Packets
 {
-    public class KeepAlivePacket : IPacket
+    public struct KeepAlivePacket : IPacket
     {
-        public int KeepAlive { get; private set; }
+        public int KeepAlive;
 
         public KeepAlivePacket(int keepAlive)
         {

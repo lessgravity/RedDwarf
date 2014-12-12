@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace LessGravity.Common
 {
     public partial class DataStream
     {
+        private Encoding _stringEncoding;
+
         public int GetVariantIntLength(int value)
         {
             var internalValue = (uint)value;
@@ -38,6 +41,17 @@ namespace LessGravity.Common
         public sbyte ReadInt8()
         {
             return (sbyte)ReadUInt8();
+        }
+
+        public string ReadString()
+        {
+            var length = ReadVariableInt();
+            if (length == 0)
+            {
+                return string.Empty;
+            }
+            var data = ReadUInt8Array(length);
+            return _stringEncoding.GetString(data);
         }
 
         public Int32 ReadInt32()
@@ -122,9 +136,23 @@ namespace LessGravity.Common
         #endregion Read
         #region Write
 
+        public void WriteString(string value)
+        {
+            WriteVariableInt(_stringEncoding.GetByteCount(value));
+            if (value.Length > 0)
+            {
+                WriteUInt8Array(_stringEncoding.GetBytes(value));
+            }
+        }
+
         public void WriteUInt8(byte value)
         {
             WriteByte(value);
+        }
+
+        public void WriteUInt8Array(byte[] value)
+        {
+            Write(value, 0, value.Length);
         }
 
         public void WriteInt32(Int32 value)

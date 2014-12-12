@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace LessGravity.Common
 {
@@ -7,6 +8,7 @@ namespace LessGravity.Common
         public DataStream(Stream baseStream)
         {
             BaseStream = baseStream;
+            _stringEncoding = Encoding.UTF8;
         }
 
         public Stream BaseStream { get; set; }

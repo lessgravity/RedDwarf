@@ -35,6 +35,8 @@ namespace RedDwarf.Server
 
         public NetworkManager NetworkManager { get; set; }
 
+        public PlayerManager PlayerManager { get; set; }
+
         public ConcurrentQueue<IPacket> PacketQueue { get; private set; }
 
         public bool IsLoggedIn { get; set; }
@@ -61,7 +63,10 @@ namespace RedDwarf.Server
 
         public void Dispose()
         {
-        
+            if (PlayerManager != null)
+            {
+                PlayerManager.Dispose();
+            }
         }
 
         public void SendPacket(IPacket packet)

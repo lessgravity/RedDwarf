@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;
@@ -92,6 +93,59 @@ namespace RedDwarf.Server
             }
         }
 
+        public void DisconnectPlayer(RemoteClient client, string reason = null)
+        {
+            if (!Clients.Contains(client))
+            {
+                throw new InvalidOperationException("The server is not aware of this client.");
+            }
+            lock (_networkLock)
+            {
+                if (reason != null)
+                {
+                    try
+                    {
+                        if (client.NetworkClient != null && client.NetworkClient.Connected)
+                        {
+                            if (client.NetworkManager.NetworkMode == NetworkMode.Login)
+                            {
+                                client.NetworkManager.WritePacket(new LoginDisconnectPacket(string.Format("\"{0}\"", reason)), PacketDirection.ToClient);
+                            }
+                            else
+                            {
+                                client.NetworkManager.WritePacket(new DisconnectPacket(string.Format("\"{0}\"", reason)), PacketDirection.ToClient);
+                            }
+                        }
+                    }
+                    catch { }
+                }
+                try
+                {
+                    if (client.NetworkClient != null && client.NetworkClient.Connected)
+                    {
+                        client.NetworkClient.Close();
+                    }
+                }
+                catch { }
+                if (client.IsLoggedIn)
+                {
+                    EntityManager.Despawn(client.Entity);
+                }
+                Clients.Remove(client);
+                if (client.IsLoggedIn)
+                {
+                    //Level.SavePlayer(client);
+                    var playerLogoutEventArgs = new PlayerLogInEventArgs(client);
+                    OnPlayerLoggedOut(playerLogoutEventArgs);
+                    if (!playerLogoutEventArgs.Handled)
+                    {
+                        //SendChat()
+                    }
+                }
+                client.Dispose();
+            }
+        }
+
         public void Dispose()
         {
 
@@ -111,6 +165,11 @@ namespace RedDwarf.Server
             }
         }
 
+        private void EntityThreadProc(object state)
+        {
+            
+        }
+
         private void HandlePacket(RemoteClient remoteClient, IPacket packet)
         {
             var packetType = packet.GetType();
@@ -119,6 +178,88 @@ namespace RedDwarf.Server
                 return;
             }
             PacketHandlers[packetType](remoteClient, this, packet);
+        }
+
+        private void NetworkThreadProc(object state)
+        {
+            while (true)
+            {
+                UpdateScheduledEvents();
+                lock (_networkLock)
+                {
+                    var clientCount = Clients.Count;
+                    for (var clientIndex = 0; clientIndex < clientCount; clientIndex++)
+                    {
+                        var client = Clients[clientIndex];
+                        var disconnect = false;
+                        while (client.PacketQueue.Count != 0)
+                        {
+                            IPacket packetToSend;
+                            if (client.PacketQueue.TryDequeue(out packetToSend))
+                            {
+                                try
+                                {
+                                    client.NetworkManager.WritePacket(packetToSend, PacketDirection.ToClient);
+                                }
+                                catch (IOException)
+                                {
+                                    disconnect = true;
+                                    continue;
+                                }
+                                if (packetToSend is DisconnectPacket ||
+                                    (packetToSend is StatusPingPacket &&
+                                     client.NetworkManager.NetworkMode == NetworkMode.Status))
+                                {
+                                    disconnect = true;
+                                }
+                            }
+                        }
+                        if (disconnect)
+                        {
+                            DisconnectPlayer(client);
+                            clientIndex--;
+                            continue;
+                        }
+                        var timeout = DateTime.Now.AddMilliseconds(10);
+                        while (client.NetworkClient.Available != 0 && DateTime.Now < timeout)
+                        {
+                            try
+                            {
+                                var receivedPacket = client.NetworkManager.ReadPacket(PacketDirection.ToServer);
+                                if (receivedPacket is DisconnectPacket)
+                                {
+                                    DisconnectPlayer(client);
+                                    clientIndex--;
+                                    break;
+                                }
+                            }
+                            catch (SocketException)
+                            {
+                                DisconnectPlayer(client);
+                                clientIndex--;
+                                break;
+                            }
+                        }
+                        if (client.IsLoggedIn)
+                        {
+                            DoClientUpdates(client);
+                        }
+                    }
+                    if (LastTimeUpdate != DateTime.MinValue)
+                    {
+                        if ((DateTime.Now - LastTimeUpdate).TotalMilliseconds >= 50)
+                        {
+                            //level.Time += ...
+                            LastTimeUpdate = DateTime.Now;
+                        }
+                    }
+                    if (NextChunkUpdate < DateTime.Now)
+                    {
+                        NextChunkUpdate = DateTime.Now.AddSeconds(1);
+                    }
+                    Thread.Sleep(10);
+                }
+            }
         }
 
         public void RegisterPacketHandler(Type packetType, Action<RemoteClient, RedDwarfServer, IPacket> packetHandler)
