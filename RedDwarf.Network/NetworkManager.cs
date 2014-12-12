@@ -23,7 +23,7 @@ namespace RedDwarf.Network
 
         public Stream BaseStream
         {
-            get {  return _baseStream;}
+            get { return _baseStream; }
             set
             {
                 lock (_baseStream)
@@ -113,13 +113,60 @@ namespace RedDwarf.Network
         {
             lock (_streamLock)
             {
-                
+                int idLength;
+                long length = _dataStream.ReadVariableInt();
+                long packetId = _dataStream.ReadVariableInt(out idLength);
+                var packetData = _dataStream.ReadUInt8Array((int)(length - idLength));
+                if (_networkModes[(int) NetworkMode].Length < packetId ||
+                    _networkModes[(int) NetworkMode][packetId][(int) packetDirection] == null)
+                {
+                    return new UnknownDataPacket
+                    {
+                        Id = packetId, 
+                        Data = packetData
+                    };
+                }
+                var dataStream = new DataStream(new MemoryStream(packetData));
+                var packetType = _networkModes[(int) NetworkMode][packetId][(int) packetDirection];
+                var packet = Activator.CreateInstance(packetType) as IPacket;
+                NetworkMode = packet.ReadPacket(dataStream, NetworkMode, packetDirection);
+                if (dataStream.Position < dataStream.Length)
+                {
+                    Console.WriteLine("Warning: did not completely read packet: {0}", packet.GetType().Name);
+                }
+                return packet;
             }
         }
 
         public void WritePacket(IPacket packet, PacketDirection packetDirection)
         {
-            
+            lock (_streamLock)
+            {
+                var networkMode = packet.WritePacket(_dataStream, NetworkMode, packetDirection);
+                _bufferedStream.WriteImmediately = true;
+                var packetId = -1;
+                var packetType = packet.GetType();
+                for (var packetTypeIndex = 0;
+                    packetTypeIndex < _networkModes[(int) NetworkMode].LongLength;
+                    packetTypeIndex++)
+                {
+                    if (_networkModes[(int) NetworkMode][packetTypeIndex][(int) packetDirection] == packetType)
+                    {
+                        packetId = packetTypeIndex;
+                        break;
+                    }
+                }
+                if (packetId == -1)
+                {
+                    throw new InvalidOperationException("Attempted to write invalid packet type.");
+                }
+                var pendingWrites = (int) _bufferedStream.PendingWrites + _dataStream.GetVariantIntLength(packetId);
+                _dataStream.WriteVariableInt(pendingWrites);
+                _dataStream.WriteVariableInt(packetId);
+                _bufferedStream.WriteImmediately = false;
+                _bufferedStream.Flush();
+                NetworkMode = networkMode;
+            }
         }
     }
 }

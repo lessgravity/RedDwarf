@@ -1,15 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace LessGravity.Common
 {
     public partial class DataStream
     {
+        public int GetVariantIntLength(int value)
+        {
+            var internalValue = (uint)value;
+            var length = 0;
+            while (true)
+            {
+                length++;
+                if ((internalValue & 0xFFFFFF80u) == 0)
+                {
+                    break;
+                }
+                internalValue >>= 7;
+            }
+            return length;
+        }
+
+
         #region Read
 
         public byte ReadUInt8()
@@ -79,8 +92,40 @@ namespace LessGravity.Common
                     ReadUInt8());
         }
 
+        public int ReadVariableInt()
+        {
+            int length;
+            return ReadVariableInt(out length);
+        }
+
+        public int ReadVariableInt(out int length)
+        {
+            var result = 0U;
+            length = 0;
+            while (true)
+            {
+                var current = ReadUInt8();
+                result |= (current & 0x7FU) << length++ * 7;
+                if (length > 5)
+                {
+                    throw new InvalidDataException("Variable Integer may not be longer than 28bits.");
+                }
+                if ((current & 0x80) != 0x80)
+                {
+                    break;
+                }
+            }
+            return (int)result;
+           
+        }
+
         #endregion Read
         #region Write
+
+        public void WriteUInt8(byte value)
+        {
+            WriteByte(value);
+        }
 
         public void WriteInt32(Int32 value)
         {
@@ -118,6 +163,31 @@ namespace LessGravity.Common
             }, 0, 8);
         }
 
+        public void WriteVariableInt(int value, out int length)
+        {
+            var internalValue = (uint) value;
+            length = 0;
+            while (true)
+            {
+                length++;
+                if ((internalValue & 0xFFFFFF80u) == 0)
+                {
+                    WriteUInt8((byte) value);
+                    break;
+                }
+                WriteUInt8((byte) (value & 0x7F | 0x80));
+                value >>= 7;
+            }
+        }
+
+        public void WriteVariableInt(int value)
+        {
+            int length;
+            WriteVariableInt(value, out length);
+        }
+
+
         #endregion Write
+
     }
 }

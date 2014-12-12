@@ -1,5 +1,4 @@
-﻿using System.IO;
-using LessGravity.Common;
+﻿using LessGravity.Common;
 
 namespace RedDwarf.Network.Interfaces
 {

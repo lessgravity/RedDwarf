@@ -2,10 +2,12 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
+using RedDwarf.Network;
 using RedDwarf.Network.Interfaces;
 
 namespace RedDwarf.Server
@@ -14,7 +16,24 @@ namespace RedDwarf.Server
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public bool EncryptionEnabled { get; set; }
+
+        protected internal byte[] VerificationToken { get; set; }
+
+        public string UserName { get; set; }
+
+        public string HostName { get; set; }
+
+        public int Ping { get; set; }
+
+        protected internal DateTime LastKeepAlive { get; set; }
+        protected internal DateTime LastKeepAliveSent { get; set; }
+
         public TcpClient NetworkClient { get; private set; }
+
+        public Stream NetworkStream { get; set; }
+
+        public NetworkManager NetworkManager { get; set; }
 
         public ConcurrentQueue<IPacket> PacketQueue { get; private set; }
 
