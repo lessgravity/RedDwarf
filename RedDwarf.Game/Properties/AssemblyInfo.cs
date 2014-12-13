@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("RedDwarf.Server")]
+[assembly: AssemblyTitle("RedDwarf.Game")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Less Gravity")]
-[assembly: AssemblyProduct("RedDwarf.Server")]
+[assembly: AssemblyProduct("RedDwarf.Game")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("d5ef76d7-8f8d-49ff-a59c-13ad51df8431")]
+[assembly: Guid("09af6a62-be08-488c-b7ca-74b5fec815aa")]
 
 // Version information for an assembly consists of the following four values:
 //

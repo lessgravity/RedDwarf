@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 namespace RedDwarf.Server
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
+            using (var server = new RedDwarfServer())
+            {
+                server.Start(new IPEndPoint(IPAddress.Any, 0xBEEF));
+            }
         }
     }
 }

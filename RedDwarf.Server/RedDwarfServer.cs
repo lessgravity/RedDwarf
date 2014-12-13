@@ -10,6 +10,7 @@ using RedDwarf.Network;
 using RedDwarf.Network.Interfaces;
 using RedDwarf.Network.Packets;
 using RedDwarf.Server.Events;
+using RedDwarf.Server.Handlers;
 
 namespace RedDwarf.Server
 {
@@ -17,7 +18,7 @@ namespace RedDwarf.Server
     {
         private readonly ServerSettings _serverSettings;
 
-        private readonly object _networkLock = new object();
+        private readonly object _networkLock;
 
         public event EventHandler<ChatMessageEventArgs> ChatMessage;
         protected internal virtual void OnChatMessage(ChatMessageEventArgs e)
@@ -43,33 +44,33 @@ namespace RedDwarf.Server
             if (PlayerLoggedOut != null) PlayerLoggedOut(this, e);
         }
 
-
         protected internal RSACryptoServiceProvider CryptoServiceProvider { get; set; }
         protected internal RSAParameters ServerKey { get; set; }
-
         public IList<RemoteClient> Clients { get; private set; }
-
         public TcpListener Listener { get; private set; }
-
         public DateTime StartTime { get; private set; }
         private DateTime NextPlayerUpdate { get; set; }
         private DateTime NextChunkUpdate { get; set; }
         private DateTime LastTimeUpdate { get; set; }
         private DateTime NextScheduledSave { get; set; }
-
         public Thread NetworkThread { get; set; }
-
         public Thread EntityThread { get; set; }
+        public EntityManager EntityManager { get; private set; }
 
         public IDictionary<Type, Action<RemoteClient, RedDwarfServer, IPacket>> PacketHandlers { get; private set; }
 
 
         public RedDwarfServer()
         {
+            _networkLock = new object();
             _serverSettings = ServerSettings.DefaultSettings();
 
             Clients = new List<RemoteClient>();
+            EntityManager = new EntityManager(this);
             PacketHandlers = new Dictionary<Type, Action<RemoteClient, RedDwarfServer, IPacket>>();
+            PacketHandlerRegistry.RegisterHandlers(this);
+            LastTimeUpdate = DateTime.MinValue;
+            NextChunkUpdate = DateTime.MinValue;
         }
 
         public RedDwarfServer(ServerSettings serverSettings) : this()

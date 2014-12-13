@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7E883672-03B9-4817-9900-E48BFD681868}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{111C5BCC-4032-465F-BE67-2F1AFF4B39F2}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RedDwarf.Server</RootNamespace>
-    <AssemblyName>RedDwarf.Server</AssemblyName>
+    <RootNamespace>RedDwarf.Game</RootNamespace>
+    <AssemblyName>RedDwarf.Game</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -41,34 +39,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EntityManager.cs" />
-    <Compile Include="Events\ChatMessageEventArgs.cs" />
-    <Compile Include="Events\ConnectionEstablishedEventArgs.cs" />
-    <Compile Include="Events\PlayerLoginEventArgs.cs" />
-    <Compile Include="Handlers\PacketHandlerRegistry.cs" />
-    <Compile Include="PlayerManager.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Entity.cs" />
+    <Compile Include="NpcEntity.cs" />
+    <Compile Include="ObjectEntity.cs" />
+    <Compile Include="PlayerEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RedDwarfServer.cs" />
-    <Compile Include="RemoteClient.cs" />
-    <Compile Include="ServerSettings.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LessGravity.Common\LessGravity.Common.csproj">
-      <Project>{48df960b-85ab-4eb7-8be3-d5a31cdc016b}</Project>
-      <Name>LessGravity.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RedDwarf.Game\RedDwarf.Game.csproj">
-      <Project>{111C5BCC-4032-465F-BE67-2F1AFF4B39F2}</Project>
-      <Name>RedDwarf.Game</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\RedDwarf.Network\RedDwarf.Network.csproj">
-      <Project>{cb6dcb2a-13a3-4a92-855e-785f200d1ca4}</Project>
-      <Name>RedDwarf.Network</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -47,6 +47,7 @@
     <Compile Include="PacketDirection.cs" />
     <Compile Include="Packets\DisconnectPacket.cs" />
     <Compile Include="Packets\KeepAlivePacket.cs" />
+    <Compile Include="Packets\LoginDisconnectPacket.cs" />
     <Compile Include="Packets\StatusPingPacket.cs" />
     <Compile Include="Packets\UnknownDataPacket.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

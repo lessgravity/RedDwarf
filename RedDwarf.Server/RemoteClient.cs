@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using RedDwarf.Game;
 using RedDwarf.Network;
 using RedDwarf.Network.Interfaces;
 
@@ -26,7 +23,10 @@ namespace RedDwarf.Server
 
         public int Ping { get; set; }
 
+        public PlayerEntity Entity { get; set; }
+
         protected internal DateTime LastKeepAlive { get; set; }
+
         protected internal DateTime LastKeepAliveSent { get; set; }
 
         public TcpClient NetworkClient { get; private set; }
